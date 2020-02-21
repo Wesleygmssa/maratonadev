@@ -15,7 +15,7 @@ Feito com :purple_heart: by Wesley Guerra :wave:
 <p align="center">
     <br/>
   <br/>
-  <img src="https://media.giphy.com/media/ehsHcZ3A1Ee7g7dzQC/giphy.gif">
+  <img src="https://media.giphy.com/media/ehsHcZ3A1Ee7g7dzQC/giphy.gif" width="700px">
   <br/>
   <br/>
 </p>
