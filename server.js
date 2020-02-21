@@ -33,8 +33,14 @@ nunjucks.configure('views', {
 
 //rotas configuração de apresentação da páginas
 server.get('/', function (req, res) {
-    const donors = []
-    return res.render('index', { items: donors })
+    db.query("SELECT * FROM donors" , function(err, result){
+        if (err) {
+            return res.send('Erro de bando de dados')
+        }
+        const donors = result.rows 
+        return res.render('index', { items: donors })
+    })
+   
 })
 
 // -> pegando dados via post do formulario
