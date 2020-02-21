@@ -1,43 +1,62 @@
 const express = require('express');
 const nunjucks = require('nunjucks')
-const donors = require('./data')
+// const donors = require('./data')
 
 const server = express()
 
 
+//configurar o servidor para apresentar arquivos extras
+server.use(express.static('public'))
 
-server.use(express.static('public'))//configurar o servidor para apresentar arquivos extras
+//habilitar o corpo do formulario body
+server.use(express.urlencoded({ extended: true }))
 
+// configurar a conexão 
+const Pool = require('pg').Pool
+const db = new Pool({
+    user: 'postgres',
+    password: '0000',
+    host: 'localhost',
+    port: 5432,
+    database: 'doe',
+})
 
-server.use(express.urlencoded({extended: true}))//habilitar o corpo do formulario body
-
-
+//configurando a templare engine
 //template engine
-server.set('view engine', 'njk') //configurando a templare engine
-nunjucks.configure('views',{
-    express:server,
+server.set('view engine', 'njk')
+nunjucks.configure('views', {
+    express: server,
     autoescape: false, // - pegando formatação html 
     noCache: true // - tirando o cache
 
 })
 
-
-server.get('/', function (req, res) {//rotas configuração de apresentação da páginas
-
-    return res.render('index',{items:donors})
+//rotas configuração de apresentação da páginas
+server.get('/', function (req, res) {
+    const donors = []
+    return res.render('index', { items: donors })
 })
 
-server.post('/', function(req, res){ // -> pegando dados via post do formulario
+// -> pegando dados via post do formulario
+server.post('/', function (req, res) {
     const name = req.body.name
     const email = req.body.email
     const blood = req.body.blood
 
-    donors.push({ // colocando valor dentro array
-        name:name,
-        blood:blood
+    if (name == "" || email == "" || blood == "") {
+        return res.send("Todos os campos são obrigatórios.")
+    }
+
+    //colocar valores dentro do banco de dados
+    const query = (`INSERT INTO "donors" ("name","email","blood") VALUES ($1 ,$2 ,$3)`)
+    const values = [name, email, blood]
+    db.query(query, values, function (err) {
+        if (err) return res.send("erro no banco de dados")
+        
+        return res.redirect('/')
+
     })
 
-    return res.redirect('/')
 })
 
 
